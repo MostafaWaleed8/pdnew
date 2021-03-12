@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PD Hosting - Log In</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="css/utilities.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/media-qu.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="container flex">
+        <a class="logo" href="/"
+          ><img src="images/logos/logo.svg" alt="logo"
+        /></a>
+        <nav>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a class="bg-dark nav-log" href="logIn.html">Log In</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Log In card -->
+    <section class="log-in" data-aos="fade-up" data-aos-duration="1000">
+      <div class="container">
+        <div class="card my-5">
+          <h1 class="text-center my-1">Log In</h1>
+
+          <form id="log-in">
+            <input type="hidden" name="formid" value="signin" />
+            <div class="form-item">
+              <h3>Email :</h3>
+              <input
+                type="email"
+                name="email"
+                placeholder="example@gmail.com"
+                autocomplete="autocomplete_off"
+                required
+              />
+            </div>
+            <div class="form-item">
+              <h3>Password :</h3>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="autocomplete_off"
+                required
+              />
+            </div>
+            <p>
+              Still hasn't signed up ? <a href="signUp.html">Sign up</a> now.
+            </p>
+            <input class="btn login-sub" type="submit" value="Log in" />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+      AOS.init();
+      $(document).ready(function () {
+        $("#log-in").submit(function (event) {
+          event.preventDefault();
+          var form_data = $(this).serialize();
+
+          $.ajax({
+            url: "send-data.php",
+            type: "POST",
+            data: form_data,
+          }).done(function (response) {
+            if (response == "sifail") {
+              Swal.fire({
+                icon: "error",
+                title: "Oops, wrong information",
+                text:
+                  "Sorry, The email or password you entered is incorrect, please try again",
+                showConfirmButton: true,
+                confirmButtonText: `ok`,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                }
+              });
+            }
+            if (response == "sisec") {
+              let timerInterval;
+              Swal.fire({
+                title: "You have been successfully logged in",
+                html:
+                  "You will be redirected to the cpanel within <b></b> milliseconds.",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                  Swal.showLoading();
+                  timerInterval = setInterval(() => {
+                    const content = Swal.getContent();
+                    if (content) {
+                      const b = content.querySelector("b");
+                      if (b) {
+                        b.textContent = Swal.getTimerLeft();
+                      }
+                    }
+                  }, 100);
+                },
+                willClose: () => {
+                  clearInterval(timerInterval);
+                },
+              }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                  location = "cpanalAPI.php";
+                }
+              });
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
